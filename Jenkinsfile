@@ -1,20 +1,18 @@
 pipeline {
-    agent any  // This will use the default agent
+    agent any
 
     environment {
-        // Set the virtual environment path based on your system setup
-        PYTHON_ENV = '/home/eng-mohammed/master_node/venv'  // Adjusted path to your virtual environment
-        SPARK_HOME = '/usr/local/spark'  // Path to your Spark installation
-        KAFKA_HOME = '/opt/kafka'  // Path to your Kafka installation
+        PYTHON_ENV = '/home/eng-mohammed/master_node/venv'
+        SPARK_HOME = '/usr/local/spark'
+        KAFKA_HOME = '/opt/kafka'
     }
 
     stages {
         stage('Install Dependencies') {
             steps {
                 script {
-                    // Activating the virtual environment and installing dependencies
                     sh '''
-                    source ${PYTHON_ENV}/bin/activate
+                    . ${PYTHON_ENV}/bin/activate
                     pip install -r requirements.txt
                     '''
                 }
@@ -25,7 +23,7 @@ pipeline {
             steps {
                 script {
                     sh '''
-                    source ${PYTHON_ENV}/bin/activate
+                    . ${PYTHON_ENV}/bin/activate
                     python producer.py
                     '''
                 }
@@ -36,7 +34,7 @@ pipeline {
             steps {
                 script {
                     sh '''
-                    source ${PYTHON_ENV}/bin/activate
+                    . ${PYTHON_ENV}/bin/activate
                     ${SPARK_HOME}/bin/spark-submit --master local[*] consumer.py
                     '''
                 }
@@ -45,20 +43,17 @@ pipeline {
 
         stage('Clean Up') {
             steps {
-                script {
-                    echo 'Cleaning up resources...'
-                    // Add any cleanup steps you need here
-                }
+                echo 'Cleaning up resources...'
             }
         }
     }
 
     post {
         success {
-            echo 'Pipeline ran successfully.'
+            echo '✅ Pipeline ran successfully.'
         }
         failure {
-            echo 'Pipeline failed.'
+            echo '❌ Pipeline failed.'
         }
     }
 }
