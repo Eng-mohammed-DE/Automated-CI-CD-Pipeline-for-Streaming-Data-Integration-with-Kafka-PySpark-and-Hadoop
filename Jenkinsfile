@@ -2,15 +2,23 @@ pipeline {
     agent any
 
     environment {
-        PYTHON_ENV = '/home/eng-mohammed/master_node/venv/bin/activate'
+        VENV_PATH = 'venv'
     }
 
     stages {
+        stage('Set Up Python Virtual Environment') {
+            steps {
+                script {
+                    // Ensure Python is available, then create venv
+                    sh 'python3 -m venv $VENV_PATH'
+                }
+            }
+        }
+
         stage('Install Dependencies') {
             steps {
                 script {
-                    // Activate full virtual environment path and install dependencies
-                    sh '. $PYTHON_ENV && pip install -r requirements.txt'
+                    sh '. $VENV_PATH/bin/activate && pip install --upgrade pip && pip install -r requirements.txt'
                 }
             }
         }
@@ -18,8 +26,7 @@ pipeline {
         stage('Run Kafka Producer') {
             steps {
                 script {
-                    // Activate full virtual environment path and run producer
-                    sh '. $PYTHON_ENV && python producer.py'
+                    sh '. $VENV_PATH/bin/activate && python producer.py'
                 }
             }
         }
@@ -27,8 +34,7 @@ pipeline {
         stage('Run Spark Consumer') {
             steps {
                 script {
-                    // Activate full virtual environment path and run Spark consumer
-                    sh '. $PYTHON_ENV && spark-submit --master local[*] consumer.py'
+                    sh '. $VENV_PATH/bin/activate && spark-submit --master local[*] consumer.py'
                 }
             }
         }
