@@ -8,32 +8,58 @@ pipeline {
     }
 
     stages {
+        stage('Check Venv Dependencies') {
+            steps {
+                script {
+                    echo '🔍 Verifying that python3.11-venv is installed...'
+                    sh '''
+                        if ! python3 -m venv --help > /dev/null 2>&1; then
+                            echo "❌ python3.11-venv is not installed!"
+                            echo "💡 Run: sudo apt install python3.11-venv"
+                            exit 1
+                        else
+                            echo "✅ python3.11-venv is available."
+                        fi
+                    '''
+                }
+            }
+        }
+
         stage('Set Up Virtualenv') {
             steps {
-                sh '''
-                python3.11 -m venv ${VENV_PATH}  # Create the virtual environment
-                . ${VENV_PATH}/bin/activate  # Activate the virtual environment
-                pip install --upgrade pip  # Upgrade pip to the latest version
-                pip install -r requirements.txt  # Install dependencies from requirements.txt
-                '''
+                script {
+                    echo 'Creating and activating virtual environment...'
+                    sh '''
+                    python3.11 -m venv ${VENV_PATH}  # Create virtual environment
+                    . ${VENV_PATH}/bin/activate  # Activate virtual environment
+                    pip install --upgrade pip  # Upgrade pip to the latest version
+                    pip install -r requirements.txt  # Install dependencies
+                    '''
+                }
             }
         }
 
         stage('Run Kafka Producer') {
             steps {
-                sh '''
-                . ${VENV_PATH}/bin/activate  # Activate the virtual environment
-                python producer.py  # Run Kafka producer
-                '''
+                script {
+                    echo 'Running Kafka Producer...'
+                    sh '''
+                    . ${VENV_PATH}/bin/activate  # Activate virtual environment
+                    python producer.py  # Run Kafka producer
+                    '''
+                }
             }
         }
 
         stage('Run Spark Consumer') {
             steps {
-                sh '''
-                . ${VENV_PATH}/bin/activate  # Activate the virtual environment
-                ${SPARK_HOME}/bin/spark-submit --master local[*] consumer.py  # Run Spark consumer
-                '''
+                script {
+                    echo 'Running Spark Consumer...'
+                    sh '''
+                    . ${VENV_PATH}/bin/activate  # Activate virtual environment
+                    ${SPARK_HOME}/bin/spark-submit --master local[*] consumer.py  # Run Spark consumer
+                    '''
+                }
             }
         }
 
