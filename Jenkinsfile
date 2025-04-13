@@ -1,16 +1,29 @@
 pipeline {
     agent any
 
-    environment {
-        PYTHON_ENV = 'venv/bin/activate'  // relative path from the workspace root
-    }
-
     stages {
+        stage('Prepare Virtual Environment') {
+            steps {
+                script {
+                    sh '''
+                        python3 --version
+                        if [ ! -d "venv" ]; then
+                            python3 -m venv venv
+                        fi
+                        . venv/bin/activate
+                        pip install --upgrade pip
+                    '''
+                }
+            }
+        }
+
         stage('Install Dependencies') {
             steps {
                 script {
-                    // Source the virtual environment and install dependencies
-                    sh '. venv/bin/activate && pip install -r requirements.txt'
+                    sh '''
+                        . venv/bin/activate
+                        pip install -r requirements.txt
+                    '''
                 }
             }
         }
@@ -18,8 +31,10 @@ pipeline {
         stage('Run Kafka Producer') {
             steps {
                 script {
-                    // Source the virtual environment and run the producer
-                    sh '. venv/bin/activate && python producer.py'
+                    sh '''
+                        . venv/bin/activate
+                        python producer.py
+                    '''
                 }
             }
         }
@@ -27,27 +42,27 @@ pipeline {
         stage('Run Spark Consumer') {
             steps {
                 script {
-                    // Source the virtual environment and run the consumer
-                    sh '. venv/bin/activate && spark-submit --master local[*] consumer.py'
+                    sh '''
+                        . venv/bin/activate
+                        spark-submit --master local[*] consumer.py
+                    '''
                 }
             }
         }
 
         stage('Clean Up') {
             steps {
-                script {
-                    echo 'Cleaning up resources...'
-                }
+                echo 'Pipeline execution complete. Clean up if needed.'
             }
         }
     }
 
     post {
         success {
-            echo 'Pipeline ran successfully.'
+            echo '✅ Pipeline ran successfully.'
         }
         failure {
-            echo 'Pipeline failed.'
+            echo '❌ Pipeline failed.'
         }
     }
 }
