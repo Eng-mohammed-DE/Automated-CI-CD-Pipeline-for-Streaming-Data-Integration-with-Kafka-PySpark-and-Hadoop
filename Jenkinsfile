@@ -2,16 +2,17 @@ pipeline {
     agent any
 
     environment {
-        VENV_PATH = '.venv'  
+        VENV_PATH = '.venv'
         SPARK_HOME = '/usr/local/spark'
         KAFKA_HOME = '/opt/kafka'
+        PYTHON_VERSION = '/usr/bin/python3.11'  // Full path to Python 3.11
     }
 
     stages {
         stage('Set Up Virtualenv') {
             steps {
                 sh '''
-                python3 -m venv ${VENV_PATH}
+                ${PYTHON_VERSION} -m venv ${VENV_PATH}
                 . ${VENV_PATH}/bin/activate
                 pip install --upgrade pip
                 pip install -r requirements.txt
@@ -53,5 +54,3 @@ pipeline {
         }
     }
 }
-
-
