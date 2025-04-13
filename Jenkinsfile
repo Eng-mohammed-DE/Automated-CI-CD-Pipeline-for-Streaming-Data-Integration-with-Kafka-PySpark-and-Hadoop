@@ -9,7 +9,8 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 script {
-                    sh 'source venv/bin/activate && pip install -r requirements.txt'
+                    // Use dot (.) instead of 'source'
+                    sh '. venv/bin/activate && pip install -r requirements.txt'
                 }
             }
         }
@@ -17,7 +18,8 @@ pipeline {
         stage('Run Kafka Producer') {
             steps {
                 script {
-                    sh 'source venv/bin/activate && python producer.py'
+                    // Use dot (.) instead of 'source'
+                    sh '.venv/bin/activate && python producer.py'
                 }
             }
         }
@@ -25,7 +27,8 @@ pipeline {
         stage('Run Spark Consumer') {
             steps {
                 script {
-                    sh 'source venv/bin/activate && spark-submit --master local[*] consumer.py'
+                    // Use dot (.) instead of 'source'
+                    sh '.venv/bin/activate && spark-submit --master local[*] consumer.py'
                 }
             }
         }
