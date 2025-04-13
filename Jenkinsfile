@@ -5,14 +5,13 @@ pipeline {
         VENV_PATH = '.venv'
         SPARK_HOME = '/usr/local/spark'
         KAFKA_HOME = '/opt/kafka'
-        PYTHON_VERSION = '/usr/bin/python3.11'  // Full path to Python 3.11
     }
 
     stages {
         stage('Set Up Virtualenv') {
             steps {
                 sh '''
-                ${PYTHON_VERSION} -m venv ${VENV_PATH}
+                sudo python3.11 -m venv ${VENV_PATH}
                 . ${VENV_PATH}/bin/activate
                 pip install --upgrade pip
                 pip install -r requirements.txt
