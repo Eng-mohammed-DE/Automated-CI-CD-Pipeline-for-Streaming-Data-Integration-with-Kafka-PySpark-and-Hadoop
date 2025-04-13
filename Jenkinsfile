@@ -18,7 +18,7 @@ pipeline {
             steps {
                 script {
                     echo '🔍 Verifying virtual environment setup...'
-                    sh 'ls -la /home/eng-mohammed/master_node/venv'  # List the contents of the VENV
+                    sh 'ls -la /home/eng-mohammed/master_node/venv'  // List the contents of the VENV
                 }
             }
         }
