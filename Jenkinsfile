@@ -9,14 +9,14 @@ pipeline {
         stage('Check if venv Exists') {
             steps {
                 script {
-                    sh '''
-                        if [ -d "venv" ]; then
-                            echo "❌ venv directory already exists. Exiting pipeline..."
-                            exit 1
-                        else
-                            echo "✅ No existing venv. Proceeding with pipeline..."
-                        fi
-                    '''
+                    if (fileExists('venv')) {
+                        echo '⚠️ venv directory already exists. Skipping the rest of the pipeline...'
+                        // Mark as success but stop further stages
+                        currentBuild.result = 'SUCCESS'
+                        error('Pipeline exited early because venv already exists.')
+                    } else {
+                        echo '✅ No existing venv. Proceeding with pipeline...'
+                    }
                 }
             }
         }
@@ -25,6 +25,7 @@ pipeline {
             steps {
                 script {
                     sh '''
+                        echo "📦 Creating virtual environment and installing dependencies..."
                         python3 -m venv venv
                         . venv/bin/activate
                         pip install -r requirements.txt
@@ -37,6 +38,7 @@ pipeline {
             steps {
                 script {
                     sh '''
+                        echo "🚀 Running Kafka Producer..."
                         . venv/bin/activate
                         python producer.py
                     '''
@@ -48,6 +50,7 @@ pipeline {
             steps {
                 script {
                     sh '''
+                        echo "🧠 Running Spark Consumer..."
                         . venv/bin/activate
                         spark-submit --master local[*] consumer.py
                     '''
