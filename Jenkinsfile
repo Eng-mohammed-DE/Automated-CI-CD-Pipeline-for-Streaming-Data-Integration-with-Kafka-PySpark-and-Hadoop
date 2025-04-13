@@ -2,14 +2,14 @@ pipeline {
     agent any
 
     environment {
-        PYTHON_ENV = '/home/eng-mohammed/master_node/venv/bin/activate'
+        PYTHON_ENV = 'venv/bin/activate'  // relative path from the workspace root
     }
 
     stages {
         stage('Install Dependencies') {
             steps {
                 script {
-                    // Use dot (.) instead of 'source'
+                    // Source the virtual environment and install dependencies
                     sh '. venv/bin/activate && pip install -r requirements.txt'
                 }
             }
@@ -18,7 +18,7 @@ pipeline {
         stage('Run Kafka Producer') {
             steps {
                 script {
-                    // Use dot (.) instead of 'source'
+                    // Source the virtual environment and run the producer
                     sh '. venv/bin/activate && python producer.py'
                 }
             }
@@ -27,7 +27,7 @@ pipeline {
         stage('Run Spark Consumer') {
             steps {
                 script {
-                    // Use dot (.) instead of 'source'
+                    // Source the virtual environment and run the consumer
                     sh '. venv/bin/activate && spark-submit --master local[*] consumer.py'
                 }
             }
