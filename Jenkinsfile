@@ -2,15 +2,21 @@ pipeline {
     agent any
 
     environment {
-        VENV_PATH = 'venv'
+        VENV_PATH = '/home/eng-mohammed/master_node/venv/bin/activate'
     }
 
     stages {
-        stage('Set Up Python Virtual Environment') {
+        stage('Check Python & venv Availability') {
             steps {
                 script {
-                    // Ensure Python is available, then create venv
-                    sh 'python3 -m venv $VENV_PATH'
+                    sh '''
+                        echo "🔍 Python & venv check..."
+                        which python3
+                        python3 --version
+                        which pip
+                        pip --version
+                        python3 -m ensurepip || echo "❌ ensurepip not available"
+                    '''
                 }
             }
         }
@@ -18,7 +24,8 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 script {
-                    sh '. $VENV_PATH/bin/activate && pip install --upgrade pip && pip install -r requirements.txt'
+                    // Activate full venv path and install dependencies
+                    sh '. ${VENV_PATH} && pip install -r requirements.txt'
                 }
             }
         }
@@ -26,7 +33,7 @@ pipeline {
         stage('Run Kafka Producer') {
             steps {
                 script {
-                    sh '. $VENV_PATH/bin/activate && python producer.py'
+                    sh '. ${VENV_PATH} && python producer.py'
                 }
             }
         }
@@ -34,7 +41,7 @@ pipeline {
         stage('Run Spark Consumer') {
             steps {
                 script {
-                    sh '. $VENV_PATH/bin/activate && spark-submit --master local[*] consumer.py'
+                    sh '. ${VENV_PATH} && spark-submit --master local[*] consumer.py'
                 }
             }
         }
@@ -42,7 +49,7 @@ pipeline {
         stage('Clean Up') {
             steps {
                 script {
-                    echo 'Cleaning up resources...'
+                    echo '🧹 Cleaning up...'
                 }
             }
         }
@@ -50,10 +57,10 @@ pipeline {
 
     post {
         success {
-            echo 'Pipeline ran successfully.'
+            echo '✅ Pipeline ran successfully.'
         }
         failure {
-            echo 'Pipeline failed.'
+            echo '❌ Pipeline failed.'
         }
     }
 }
