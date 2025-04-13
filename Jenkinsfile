@@ -2,19 +2,29 @@ pipeline {
     agent any
 
     environment {
-        VENV_PATH = '.venv'  // Virtual environment path
-        SPARK_HOME = '/usr/local/spark'  // Spark installation path
-        KAFKA_HOME = '/opt/kafka'  // Kafka installation path
+        VENV_PATH = '.venv'
+        SPARK_HOME = '/usr/local/spark'
+        KAFKA_HOME = '/opt/kafka'
+        PYTHON_VERSION = 'python3.11'  // Ensure using the correct Python version
     }
 
     stages {
-        stage('Check Venv Dependencies') {
+        stage('Check Python Version and Venv Dependencies') {
             steps {
                 script {
-                    echo '🔍 Verifying that python3.11-venv is installed...'
+                    echo '🔍 Verifying Python version and venv dependencies...'
                     sh '''
-                        if ! python3 -m venv --help > /dev/null 2>&1; then
-                            echo "❌ python3.11-venv is not installed!"
+                        # Check if Python 3.11 is available
+                        if ! ${PYTHON_VERSION} --version > /dev/null 2>&1; then
+                            echo "❌ ${PYTHON_VERSION} is not installed!"
+                            exit 1
+                        else
+                            echo "✅ Using ${PYTHON_VERSION}"
+                        fi
+                        
+                        # Check if python3.11-venv is available
+                        if ! ${PYTHON_VERSION} -m venv --help > /dev/null 2>&1; then
+                            echo "❌ python3.11-venv is not available!"
                             echo "💡 Run: sudo apt install python3.11-venv"
                             exit 1
                         else
@@ -30,10 +40,15 @@ pipeline {
                 script {
                     echo 'Creating and activating virtual environment...'
                     sh '''
-                    python3.11 -m venv ${VENV_PATH}  # Create virtual environment
-                    . ${VENV_PATH}/bin/activate  # Activate virtual environment
-                    pip install --upgrade pip  # Upgrade pip to the latest version
-                    pip install -r requirements.txt  # Install dependencies
+                    # Create virtual environment
+                    ${PYTHON_VERSION} -m venv ${VENV_PATH}
+                    
+                    # Activate virtual environment
+                    . ${VENV_PATH}/bin/activate
+                    
+                    # Upgrade pip and install dependencies
+                    pip install --upgrade pip
+                    pip install -r requirements.txt
                     '''
                 }
             }
@@ -44,8 +59,8 @@ pipeline {
                 script {
                     echo 'Running Kafka Producer...'
                     sh '''
-                    . ${VENV_PATH}/bin/activate  # Activate virtual environment
-                    python producer.py  # Run Kafka producer
+                    . ${VENV_PATH}/bin/activate
+                    python producer.py
                     '''
                 }
             }
@@ -56,8 +71,8 @@ pipeline {
                 script {
                     echo 'Running Spark Consumer...'
                     sh '''
-                    . ${VENV_PATH}/bin/activate  # Activate virtual environment
-                    ${SPARK_HOME}/bin/spark-submit --master local[*] consumer.py  # Run Spark consumer
+                    . ${VENV_PATH}/bin/activate
+                    ${SPARK_HOME}/bin/spark-submit --master local[*] consumer.py
                     '''
                 }
             }
