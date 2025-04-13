@@ -6,12 +6,16 @@ pipeline {
             steps {
                 script {
                     sh '''
+                        echo "🛠 Checking Python version..."
                         python3 --version
+
+                        echo "📦 Creating virtual environment if it doesn't exist..."
                         if [ ! -d "venv" ]; then
                             python3 -m venv venv
                         fi
-                        . venv/bin/activate
-                        pip install --upgrade pip
+
+                        echo "⬆️ Upgrading pip..."
+                        venv/bin/pip install --upgrade pip
                     '''
                 }
             }
@@ -21,8 +25,8 @@ pipeline {
             steps {
                 script {
                     sh '''
-                        . venv/bin/activate
-                        pip install -r requirements.txt
+                        echo "📥 Installing project dependencies..."
+                        venv/bin/pip install -r requirements.txt
                     '''
                 }
             }
@@ -32,8 +36,8 @@ pipeline {
             steps {
                 script {
                     sh '''
-                        . venv/bin/activate
-                        python producer.py
+                        echo "🚀 Running Kafka producer..."
+                        venv/bin/python producer.py
                     '''
                 }
             }
@@ -43,7 +47,7 @@ pipeline {
             steps {
                 script {
                     sh '''
-                        . venv/bin/activate
+                        echo "🔄 Running Spark consumer..."
                         spark-submit --master local[*] consumer.py
                     '''
                 }
@@ -52,7 +56,7 @@ pipeline {
 
         stage('Clean Up') {
             steps {
-                echo 'Pipeline execution complete. Clean up if needed.'
+                echo '🧹 Pipeline execution complete. Clean up if needed.'
             }
         }
     }
