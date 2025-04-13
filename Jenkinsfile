@@ -11,7 +11,7 @@ pipeline {
         stage('Set Up Virtualenv') {
             steps {
                 sh '''
-                sudo python3.11 -m venv ${VENV_PATH}
+                python3.11 -m venv ${VENV_PATH}
                 . ${VENV_PATH}/bin/activate
                 pip install --upgrade pip
                 pip install -r requirements.txt
