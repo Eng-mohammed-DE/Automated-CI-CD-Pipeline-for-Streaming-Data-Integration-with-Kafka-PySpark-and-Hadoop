@@ -1,13 +1,11 @@
 pipeline {
     agent any
-
     stages {
-        stage('Create Virtual Environment') {
+        stage('Debug VENV Path') {
             steps {
                 script {
-                    echo '🔨 Creating Virtual Environment...'
-                    sh 'python3 -m venv /home/eng-mohammed/master_node/venv'
-                    echo '✅ Virtual Environment Created.'
+                    echo 'Checking VENV Path...'
+                    sh 'ls -la /home/eng-mohammed/master_node/venv'
                 }
             }
         }
