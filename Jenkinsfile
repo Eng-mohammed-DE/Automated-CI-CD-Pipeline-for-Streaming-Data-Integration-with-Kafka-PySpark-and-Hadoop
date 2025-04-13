@@ -33,12 +33,13 @@ pipeline {
             steps {
                 echo "📦 Verifying Virtual Environment setup..."
                 sh """
-                    set -e
+                    set +e
                     . ${VENV_DIR}/bin/activate
                     echo "Python path: $(which python)"
                     python --version
                     echo "Pip path: $(which pip)"
                     pip --version
+                    set -e
                 """
             }
         }
@@ -47,14 +48,17 @@ pipeline {
             steps {
                 echo "📦 Installing Python dependencies..."
                 sh """
+                    set +e
                     if [ -f ${REQUIREMENTS_FILE} ]; then
                         . ${VENV_DIR}/bin/activate
                         pip install --upgrade pip
                         pip install -r ${REQUIREMENTS_FILE}
+                        echo '✅ Dependencies installed successfully.'
                     else
                         echo "❌ ${REQUIREMENTS_FILE} not found!"
                         exit 1
                     fi
+                    set -e
                 """
             }
         }
@@ -63,10 +67,11 @@ pipeline {
             steps {
                 echo "🚀 Running Kafka Producer..."
                 sh """
-                    set -e
+                    set +e
                     . ${VENV_DIR}/bin/activate
                     echo "Running producer.py..."
                     python producer.py || { echo '❌ Kafka Producer failed'; exit 1; }
+                    set -e
                 """
             }
         }
@@ -75,10 +80,11 @@ pipeline {
             steps {
                 echo "🚀 Running Spark Consumer..."
                 sh """
-                    set -e
+                    set +e
                     . ${VENV_DIR}/bin/activate
                     echo "Running consumer.py with Spark..."
                     spark-submit --master local[*] consumer.py || { echo '❌ Spark Consumer failed'; exit 1; }
+                    set -e
                 """
             }
         }
