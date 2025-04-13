@@ -6,11 +6,29 @@ pipeline {
     }
 
     stages {
+        stage('Check if venv Exists') {
+            steps {
+                script {
+                    sh '''
+                        if [ -d "venv" ]; then
+                            echo "❌ venv directory already exists. Exiting pipeline..."
+                            exit 1
+                        else
+                            echo "✅ No existing venv. Proceeding with pipeline..."
+                        fi
+                    '''
+                }
+            }
+        }
+
         stage('Install Dependencies') {
             steps {
                 script {
-                    // Use dot (.) instead of 'source'
-                    sh '. venv/bin/activate && pip install -r requirements.txt'
+                    sh '''
+                        python3 -m venv venv
+                        . venv/bin/activate
+                        pip install -r requirements.txt
+                    '''
                 }
             }
         }
@@ -18,8 +36,10 @@ pipeline {
         stage('Run Kafka Producer') {
             steps {
                 script {
-                    // Use dot (.) instead of 'source'
-                    sh '. venv/bin/activate && python producer.py'
+                    sh '''
+                        . venv/bin/activate
+                        python producer.py
+                    '''
                 }
             }
         }
@@ -27,8 +47,10 @@ pipeline {
         stage('Run Spark Consumer') {
             steps {
                 script {
-                    // Use dot (.) instead of 'source'
-                    sh '. venv/bin/activate && spark-submit --master local[*] consumer.py'
+                    sh '''
+                        . venv/bin/activate
+                        spark-submit --master local[*] consumer.py
+                    '''
                 }
             }
         }
@@ -36,7 +58,7 @@ pipeline {
         stage('Clean Up') {
             steps {
                 script {
-                    echo 'Cleaning up resources...'
+                    echo '🧹 Cleaning up resources...'
                 }
             }
         }
@@ -44,10 +66,10 @@ pipeline {
 
     post {
         success {
-            echo 'Pipeline ran successfully.'
+            echo '✅ Pipeline ran successfully.'
         }
         failure {
-            echo 'Pipeline failed.'
+            echo '❌ Pipeline failed or exited early.'
         }
     }
 }
