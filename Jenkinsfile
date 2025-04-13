@@ -18,8 +18,8 @@ pipeline {
         stage('Run Kafka Producer') {
             steps {
                 script {
-                    // Use dot (.) instead of 'source'
-                    sh '.venv/bin/activate && python producer.py'
+                    // Corrected the space between '.' and 'venv'
+                    sh '. venv/bin/activate && python producer.py'
                 }
             }
         }
@@ -27,8 +27,8 @@ pipeline {
         stage('Run Spark Consumer') {
             steps {
                 script {
-                    // Use dot (.) instead of 'source'
-                    sh '.venv/bin/activate && spark-submit --master local[*] consumer.py'
+                    // Corrected the space between '.' and 'venv'
+                    sh '. venv/bin/activate && spark-submit --master local[*] consumer.py'
                 }
             }
         }
