@@ -4,6 +4,7 @@ pipeline {
     environment {
         VENV_PATH = '/home/eng-mohammed/master_node/venv'
         WORKSPACE_PATH = '/var/jenkins_home/workspace/master_job'
+        KAFKA_BROKER = '192.168.1.39:9092'  // Specify your Kafka broker address here
     }
 
     stages {
@@ -33,7 +34,7 @@ pipeline {
                     try {
                         echo 'Running producer.py...'
                         // Activate the virtual environment and run producer.py
-                        sh '. $VENV_PATH/bin/activate && python $WORKSPACE_PATH/producer.py'
+                        sh '. $VENV_PATH/bin/activate && KAFKA_BROKER=$KAFKA_BROKER python $WORKSPACE_PATH/producer.py'
                     } catch (Exception e) {
                         currentBuild.result = 'FAILURE'
                         throw e
@@ -48,7 +49,7 @@ pipeline {
                     try {
                         echo 'Running consumer.py...'
                         // Activate the virtual environment and run consumer.py
-                        sh '. $VENV_PATH/bin/activate && python $WORKSPACE_PATH/consumer.py'
+                        sh '. $VENV_PATH/bin/activate && KAFKA_BROKER=$KAFKA_BROKER python $WORKSPACE_PATH/consumer.py'
                     } catch (Exception e) {
                         currentBuild.result = 'FAILURE'
                         throw e
