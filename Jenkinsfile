@@ -27,6 +27,15 @@ pipeline {
             }
         }
         
+        stage('List Files in Workspace') {
+            steps {
+                script {
+                    echo 'Listing files in workspace...'
+                    sh 'ls -la /var/jenkins_home/workspace/master_job'
+                }
+            }
+        }
+
         stage('Run Producer') {
             steps {
                 script {
