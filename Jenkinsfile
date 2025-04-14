@@ -46,8 +46,9 @@ pipeline {
             steps {
                 script {
                     try {
-                        echo 'Running consumer.py...'
-                        sh '. /home/eng-mohammed/master_node/venv/bin/activate && python /home/eng-mohammed/master_node/consumer.py'
+                        echo 'Checking if consumer.py exists...'
+                        // Check if consumer.py exists
+                        sh 'if [ -f /home/eng-mohammed/master_node/consumer.py ]; then . /home/eng-mohammed/master_node/venv/bin/activate && python /home/eng-mohammed/master_node/consumer.py; else echo "consumer.py not found."; fi'
                     } catch (Exception e) {
                         currentBuild.result = 'FAILURE'
                         throw e
