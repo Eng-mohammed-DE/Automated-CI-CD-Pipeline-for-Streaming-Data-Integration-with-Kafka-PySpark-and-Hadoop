@@ -7,16 +7,13 @@ pipeline {
                     try {
                         echo 'Setting up virtual environment...'
 
-                        // Install necessary packages
-                        sh 'apt update && apt install -y python3.11-venv python3-pip python3-setuptools python3-dev'
-
-                        // Create the virtual environment
-                        sh 'python3.11 -m venv /home/eng-mohammed/master_node/venv'
+                        // Create the virtual environment if not exists
+                        sh 'python3.11 -m venv /home/eng-mohammed/master_node/venv || echo "Virtual environment already exists"'
 
                         // Upgrade pip inside the virtual environment
                         sh '. /home/eng-mohammed/master_node/venv/bin/activate && pip install --upgrade pip'
 
-                        // Check if requirements.txt exists and install dependencies
+                        // Install dependencies from requirements.txt
                         sh 'if [ -f /home/eng-mohammed/master_node/requirements.txt ]; then . /home/eng-mohammed/master_node/venv/bin/activate && pip install -r /home/eng-mohammed/master_node/requirements.txt; else echo "requirements.txt not found."; fi'
 
                     } catch (Exception e) {
@@ -27,22 +24,13 @@ pipeline {
             }
         }
         
-        stage('List Files in Workspace') {
-            steps {
-                script {
-                    echo 'Listing files in workspace...'
-                    sh 'ls -la /var/jenkins_home/workspace/master_job'
-                }
-            }
-        }
-
         stage('Run Producer') {
             steps {
                 script {
                     try {
-                        echo 'Checking if producer.py exists...'
-                        // Check if producer.py exists
-                        sh 'if [ -f /home/eng-mohammed/master_node/producer.py ]; then . /home/eng-mohammed/master_node/venv/bin/activate && python /home/eng-mohammed/master_node/producer.py; else echo "producer.py not found."; fi'
+                        echo 'Running producer.py...'
+                        // Activate the virtual environment and run producer.py
+                        sh '. /home/eng-mohammed/master_node/venv/bin/activate && python /home/eng-mohammed/master_node/producer.py'
                     } catch (Exception e) {
                         currentBuild.result = 'FAILURE'
                         throw e
@@ -55,23 +43,9 @@ pipeline {
             steps {
                 script {
                     try {
-                        echo 'Checking if consumer.py exists...'
-                        // Check if consumer.py exists
-                        sh 'if [ -f /home/eng-mohammed/master_node/consumer.py ]; then . /home/eng-mohammed/master_node/venv/bin/activate && python /home/eng-mohammed/master_node/consumer.py; else echo "consumer.py not found."; fi'
-                    } catch (Exception e) {
-                        currentBuild.result = 'FAILURE'
-                        throw e
-                    }
-                }
-            }
-        }
-        
-        stage('Check VENV Path') {
-            steps {
-                script {
-                    try {
-                        echo 'Checking VENV Path...'
-                        sh 'ls -la /home/eng-mohammed/master_node/venv'
+                        echo 'Running consumer.py...'
+                        // Activate the virtual environment and run consumer.py
+                        sh '. /home/eng-mohammed/master_node/venv/bin/activate && python /home/eng-mohammed/master_node/consumer.py'
                     } catch (Exception e) {
                         currentBuild.result = 'FAILURE'
                         throw e
