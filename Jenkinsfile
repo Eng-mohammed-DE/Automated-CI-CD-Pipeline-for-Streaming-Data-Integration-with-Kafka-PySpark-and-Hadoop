@@ -14,7 +14,7 @@ pipeline {
                         throw e
                     }
                 }
-            }
+            }     
         }
         stage('Run Producer') {
             steps {
