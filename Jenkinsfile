@@ -4,7 +4,7 @@ pipeline {
     environment {
         VENV_PATH = '/home/eng-mohammed/master_node/venv'
         WORKSPACE_PATH = '/var/jenkins_home/workspace/master_job'
-        KAFKA_BROKER = '192.168.1.39:9092'  // Specify your Kafka broker address here
+        KAFKA_BROKER = 'localhost:9092'  // Specify your Kafka broker address here
     }
 
     stages {
