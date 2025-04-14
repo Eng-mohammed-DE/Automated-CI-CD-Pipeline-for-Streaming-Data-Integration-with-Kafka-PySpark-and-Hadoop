@@ -6,7 +6,7 @@ import time
 
 # Initialize Kafka Producer
 producer = KafkaProducer(
-    bootstrap_servers='localhost:9092',
+    bootstrap_servers='192.168.1.39:9092',
     value_serializer=lambda v: json.dumps(v).encode('utf-8')
 )
 
@@ -23,7 +23,7 @@ def produce_data():
         }
         
         # Send employee data to Kafka topic 'employee_data'
-        producer.send('node101', value=employee_data)
+        producer.send('stage-topic', value=employee_data)
 
         time.sleep(1)  # Send data every 1 second
 
