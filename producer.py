@@ -1,14 +1,31 @@
+
 from kafka import KafkaProducer
 import json
+import random
 import time
 
-# Kafka Producer Configuration
-producer = KafkaProducer(bootstrap_servers='192.168.1.39:9092', value_serializer=lambda v: json.dumps(v).encode('utf-8'))
+# Initialize Kafka Producer
+producer = KafkaProducer(
+    bootstrap_servers='localhost:9092',
+    value_serializer=lambda v: json.dumps(v).encode('utf-8')
+)
 
-topic = 'node101' 
+# List of employee names and departments
+names = ['Ali', 'omer', 'hassan', 'sara', 'mohammed']
+departments = ['HR', 'Finance', 'Engineering', 'Marketing', 'Sales']
 
-while True:
-    message = {"sensor_id": "123", "temperature": 25}
-    producer.send(topic, message)
-    print(f"Sent to {topic}: {message}")
-    time.sleep(2)
+# Function to generate random employee data and send to Kafka
+def produce_data():
+    while True:
+        employee_data = {
+            'name': random.choice(names),
+            'department': random.choice(departments)
+        }
+        
+        # Send employee data to Kafka topic 'employee_data'
+        producer.send('node101', value=employee_data)
+
+        time.sleep(1)  # Send data every 1 second
+
+if __name__ == "__main__":
+    produce_data()
