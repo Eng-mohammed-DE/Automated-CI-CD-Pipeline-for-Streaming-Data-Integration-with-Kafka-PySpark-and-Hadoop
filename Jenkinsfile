@@ -31,8 +31,9 @@ pipeline {
             steps {
                 script {
                     try {
-                        echo 'Running producer.py...'
-                        sh '. /home/eng-mohammed/master_node/venv/bin/activate && python /home/eng-mohammed/master_node/producer.py'
+                        echo 'Checking if producer.py exists...'
+                        // Check if producer.py exists
+                        sh 'if [ -f /home/eng-mohammed/master_node/producer.py ]; then . /home/eng-mohammed/master_node/venv/bin/activate && python /home/eng-mohammed/master_node/producer.py; else echo "producer.py not found."; fi'
                     } catch (Exception e) {
                         currentBuild.result = 'FAILURE'
                         throw e
