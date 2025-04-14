@@ -17,7 +17,7 @@ schema = StructType().add("name", StringType()).add("department", StringType())
 df = spark.readStream \
     .format("kafka") \
     .option("kafka.bootstrap.servers", "localhost:9092") \
-    .option("subscribe", "node101") \
+    .option("subscribe", "stage-topic") \
     .option("startingOffsets", "latest") \
     .option("maxOffsetsPerTrigger", 1000) \
     .load()
