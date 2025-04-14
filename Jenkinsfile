@@ -14,10 +14,10 @@ pipeline {
                         sh 'python3.11 -m venv /home/eng-mohammed/master_node/venv'
 
                         // Upgrade pip inside the virtual environment
-                        sh 'source /home/eng-mohammed/master_node/venv/bin/activate && pip install --upgrade pip'
+                        sh '. /home/eng-mohammed/master_node/venv/bin/activate && pip install --upgrade pip'
 
                         // Install dependencies from the requirements.txt file
-                        sh 'source /home/eng-mohammed/master_node/venv/bin/activate && pip install -r /home/eng-mohammed/master_node/requirements.txt'
+                        sh '. /home/eng-mohammed/master_node/venv/bin/activate && pip install -r /home/eng-mohammed/master_node/requirements.txt'
 
                     } catch (Exception e) {
                         currentBuild.result = 'FAILURE'
@@ -32,7 +32,7 @@ pipeline {
                 script {
                     try {
                         echo 'Running producer.py...'
-                        sh 'source /home/eng-mohammed/master_node/venv/bin/activate && python /home/eng-mohammed/master_node/producer.py'
+                        sh '. /home/eng-mohammed/master_node/venv/bin/activate && python /home/eng-mohammed/master_node/producer.py'
                     } catch (Exception e) {
                         currentBuild.result = 'FAILURE'
                         throw e
@@ -46,7 +46,7 @@ pipeline {
                 script {
                     try {
                         echo 'Running consumer.py...'
-                        sh 'source /home/eng-mohammed/master_node/venv/bin/activate && python /home/eng-mohammed/master_node/consumer.py'
+                        sh '. /home/eng-mohammed/master_node/venv/bin/activate && python /home/eng-mohammed/master_node/consumer.py'
                     } catch (Exception e) {
                         currentBuild.result = 'FAILURE'
                         throw e
