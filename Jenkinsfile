@@ -7,7 +7,7 @@ pipeline {
                     try {
                         echo 'Setting up virtual environment...'
 
-                        // Use root user (without sudo) for package installation
+                        // Install necessary packages
                         sh 'apt update && apt install -y python3.11-venv python3-pip python3-setuptools python3-dev'
 
                         // Create the virtual environment
@@ -16,8 +16,8 @@ pipeline {
                         // Upgrade pip inside the virtual environment
                         sh '. /home/eng-mohammed/master_node/venv/bin/activate && pip install --upgrade pip'
 
-                        // Install dependencies from the requirements.txt file
-                        sh '. /home/eng-mohammed/master_node/venv/bin/activate && pip install -r /home/eng-mohammed/master_node/requirements.txt'
+                        // Check if requirements.txt exists and install dependencies
+                        sh 'if [ -f /home/eng-mohammed/master_node/requirements.txt ]; then . /home/eng-mohammed/master_node/venv/bin/activate && pip install -r /home/eng-mohammed/master_node/requirements.txt; else echo "requirements.txt not found."; fi'
 
                     } catch (Exception e) {
                         currentBuild.result = 'FAILURE'
