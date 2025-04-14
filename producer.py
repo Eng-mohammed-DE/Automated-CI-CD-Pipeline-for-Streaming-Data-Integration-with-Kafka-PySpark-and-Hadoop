@@ -3,7 +3,7 @@ import json
 import time
 
 # Kafka Producer Configuration
-producer = KafkaProducer(bootstrap_servers='localhost:9092', value_serializer=lambda v: json.dumps(v).encode('utf-8'))
+producer = KafkaProducer(bootstrap_servers='192.168.1.39:9092', value_serializer=lambda v: json.dumps(v).encode('utf-8'))
 
 # Infinite loop to send data to Kafka
 while True:
