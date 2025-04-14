@@ -9,6 +9,6 @@ request_timeout_ms=120000
 # Infinite loop to send data to Kafka
 while True:
     message = {"sensor_id": "123", "temperature": 25}
-    producer.send('node-data', message)
+    producer.send('node20', message)
     print(f"Sent: {message}")
     time.sleep(2)  # Simulate sending data every 2 seconds
